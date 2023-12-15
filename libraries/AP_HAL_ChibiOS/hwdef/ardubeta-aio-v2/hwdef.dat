@@ -1,0 +1,171 @@
+# hw definition file for ardubeta-aio hardware
+
+# STATUS:
+# This port is mostly complete. Main missing feature are OSD,
+# dataflash
+
+# MCU class and specific type
+MCU STM32F4xx STM32F405xx
+
+# Betaflight motor order for copter
+define HAL_FRAME_TYPE_DEFAULT 18
+
+# board ID for firmware load
+APJ_BOARD_ID 255
+
+# crystal frequency
+OSCILLATOR_HZ 24000000
+
+define STM32_ST_USE_TIMER 5
+
+FLASH_SIZE_KB 1024
+
+# board voltage
+STM32_VDD 330U
+
+# only one I2C bus
+I2C_ORDER I2C1
+
+# LEDs
+PA15 LED_BLUE OUTPUT HIGH GPIO(0)
+
+# buzzer
+#PB6 TIM4_CH1 TIM4 GPIO(80) ALARM
+
+# rcinput 
+#PB7 TIM4_CH2 TIM4 PPMIN
+PA3 TIM2_CH4 TIM2 RCININT PULLDOWN
+
+# SBUS inversion control pin, active low
+PC15 SBUS_INVERT OUTPUT
+
+# spi1 bus for IMU
+PA5 SPI1_SCK SPI1
+PA6 SPI1_MISO SPI1
+PA7 SPI1_MOSI SPI1
+
+PC4 MPU6500_CS CS
+PC5 MPU6500_DRDY INPUT
+
+# spi2 for OSD
+PB13 SPI2_SCK SPI2
+PB14 SPI2_MISO SPI2
+PB15 SPI2_MOSI SPI2
+PB12 MAX7456_CS CS
+
+# spi3 for dataflash W25Q128FV
+PB3 SPI3_SCK SPI3
+PB4 SPI3_MISO SPI3
+PB5 SPI3_MOSI SPI3
+PD2 FLASH_CS CS
+
+# only one I2C bus in normal config
+PB8 I2C1_SCL I2C1
+PB9 I2C1_SDA I2C1
+
+# analog pins
+PC2 BATT_VOLTAGE_SENS ADC1 SCALE(1)
+PC1 BATT_CURRENT_SENS ADC1 SCALE(1)
+#PC3 RSSI_ADC ADC1
+
+# define default battery setup
+define HAL_BATT_VOLT_PIN 12
+define HAL_BATT_CURR_PIN 11
+define HAL_BATT_VOLT_SCALE 11.1
+define HAL_BATT_CURR_SCALE 50
+
+#current offset
+define BATT_AMP_OFFSET 1.2
+
+# order of UARTs (and USB)
+SERIAL_ORDER OTG1 USART1 USART3 UART4 
+
+# USART1 crossfire
+PA9 USART1_TX USART1
+PA10 USART1_RX USART1 
+
+# USART3 GPS
+PC10 USART3_TX USART3 
+PC11 USART3_RX USART3 
+
+# UART4	VTX
+PA0 UART4_TX UART4 
+PA1 UART4_RX UART4 NODMA
+
+# USB
+PA11 OTG_FS_DM OTG1
+PA12 OTG_FS_DP OTG1
+
+# USB detection
+PA8 VBUS INPUT OPENDRAIN
+
+# Debug
+PA13 JTMS-SWDIO SWD
+PA14 JTCK-SWCLK SWD
+BRD_OPTIONS 8
+
+# PWM out pins. Note that channel order follows the ArduPilot motor
+# order conventions
+PC9 TIM3_CH4 TIM3 PWM(4) GPIO(50) 
+PC8 TIM3_CH3 TIM3 PWM(3) GPIO(51) BIDIR
+PC7 TIM3_CH2 TIM3 PWM(2) GPIO(52) BIDIR
+PC6 TIM3_CH1 TIM3 PWM(1) GPIO(53) 
+
+# NeoPixel LED strip 灯带
+#PB1 TIM3_CH4 TIM3 PWM(5) GPIO(54)
+#define HAL_NEOPIXEL_COUNT 8
+
+define HAL_STORAGE_SIZE 15360
+define STORAGE_FLASH_PAGE 2
+
+# reserve 32k for bootloader and 32k for flash storage
+FLASH_RESERVE_START_KB 64
+
+# no built-in compass, but probe the i2c bus for all possible
+# external compass types
+define ALLOW_ARM_NO_COMPASS
+define HAL_COMPASS_DEFAULT HAL_COMPASS_NONE
+define HAL_PROBE_EXTERNAL_I2C_COMPASSES
+define HAL_I2C_INTERNAL_MASK 0
+define HAL_COMPASS_AUTO_ROT_DEFAULT 2
+
+# SPI devices
+SPIDEV mpu6500   SPI1 DEVID1 MPU6500_CS  MODE3 1*MHZ 8*MHZ 
+#SPIDEV icm42670   SPI1 DEVID1 MPU6500_CS MODE3 2*MHZ 8*MHZ 
+SPIDEV icm42688   SPI1 DEVID1 MPU6500_CS MODE3 1*MHZ 10*MHZ
+SPIDEV bmi270     SPI1 DEVID1 MPU6500_CS  MODE3 10*MHZ 10*MHZ
+SPIDEV  bmi323    SPI1 DEVID1 MPU6500_CS  MODE3 1*MHZ 10*MHZ
+SPIDEV dataflash SPI3 DEVID2 FLASH_CS    MODE3 32*MHZ 32*MHZ
+SPIDEV osd       SPI2 DEVID3 MAX7456_CS  MODE0 10*MHZ 10*MHZ
+
+# one IMU
+IMU Invensense SPI:mpu6500 ROTATION_ROLL_180_YAW_90
+#IMU Invensensev3 SPI:icm42670 ROTATION_ROLL_180_YAW_90
+IMU Invensensev3 SPI:icm42688 ROTATION_ROLL_180_YAW_90
+IMU BMI270 SPI:bmi270 ROTATION_ROLL_180
+IMU BMI323 SPI:bmi323 ROTATION_PITCH_180
+
+define ARMING_DELAY_SEC 0
+
+# built-in barometer
+BARO SPL06  I2C:0:0x76
+BARO BMP280  I2C:0:0x76
+
+# enable logging to dataflash
+define HAL_LOGGING_DATAFLASH_ENABLED 1
+
+# setup for OSD
+define OSD_ENABLED 1
+define HAL_OSD_TYPE_DEFAULT 1
+ROMFS_WILDCARD libraries/AP_OSD/fonts/font0.bin
+
+# 8 PWM available by default
+#define BOARD_PWM_COUNT_DEFAULT 8
+
+#board default 
+define AP_TRAMP_ENABLED 1
+
+# save some flash
+include ../include/save_some_flash.inc
+#include ../include/minimal_GPS.inc
+#include ../include/minimize_features.inc
