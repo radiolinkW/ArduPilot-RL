@@ -33,7 +33,7 @@ USB_PRODUCT 0x1718
 I2C_ORDER I2C1 I2C2
 
 # order of USARTs (and USB)
-SERIAL_ORDER OTG1 USART1 USART2 USART6 USART4 USART7
+SERIAL_ORDER OTG1 USART1 USART2 USART6 USART4 #USART7
 
 # USART6 serial3 GPS
 PA0 USART6_TX USART6
@@ -48,9 +48,9 @@ PA6 SPI1_MISO SPI1
 PA7 SPI1_MOSI SPI1 RESET HIGH
 
 # USART7 serial5 ESC_TX
-PA8 USART7_RX USART7 NODMA
-define HAL_SERIAL5_PROTOCOL 16
-define HAL_SERIAL5_BAUD 115
+#PA8 USART7_RX USART7 NODMA
+#define HAL_SERIAL5_PROTOCOL 16
+#define HAL_SERIAL5_BAUD 115
 
 # setup for power brick
 define HAL_BATT_VOLT_PIN 2
@@ -107,12 +107,13 @@ PD10 OSD_CS CS HIGH
 
 PE3 VDD_SENSORS_EN OUTPUT HIGH
 
-# If you need to use dshot, enable dma channel for timers and 
+# If you need to use dshot, enable two dma channel for o timers and 
 # modify the function bool RCOutput::setup_group_DMA in libraties/AP_HAL_ChibiOS/RCOutput.cpp
-
+define HC32_TMRA_1_PER_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 7)
 define HC32_TMRA_1_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(1, 6)
+define HC32_TMRA_4_PER_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 5)
 define HC32_TMRA_4_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(1, 7)
-define HC32_TMRA_9_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 5)
+#define HC32_TMRA_9_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 5)
 
 # PWM outputs via groups, so it is best to set the channels of the same timer to adjacent output pins
 # Such as TIMA_1_PWM1 - TIMA_1_PWM4 setup to PWM(1)-PWM(4)
