@@ -1,0 +1,163 @@
+# hw definition file for ArduBeta hardware
+
+# STATUS:
+# This port is mostly complete. Main missing feature are OSD,
+# dataflash
+
+# MCU class and specific type
+MCU STM32F4xx STM32F405xx
+
+# Betaflight motor order for copter
+define HAL_FRAME_TYPE_DEFAULT 12
+
+# board ID for firmware load
+APJ_BOARD_ID 27
+
+# crystal frequency
+OSCILLATOR_HZ 24000000
+
+define STM32_ST_USE_TIMER 5
+
+FLASH_SIZE_KB 1024
+
+# board voltage
+STM32_VDD 330U
+
+# only one I2C bus
+I2C_ORDER I2C1
+
+# LEDs
+PA15 LED_BLUE OUTPUT HIGH GPIO(0)
+
+# buzzer
+#PC9 TIM8_CH4 TIM8 GPIO(80) ALARM
+
+# spi1 bus for IMU
+PA5 SPI1_SCK SPI1
+PA6 SPI1_MISO SPI1
+PA7 SPI1_MOSI SPI1
+
+# spi3 for dataflash and OSD
+PC10 SPI3_SCK SPI3
+PC11 SPI3_MISO SPI3
+PC12 SPI3_MOSI SPI3
+PB12 MAX7456_CS CS
+
+# dataflash M25P16
+PD2 FLASH_CS CS
+
+PC4 MPU6500_CS CS
+PC5 MPU6500_DRDY INPUT
+
+# only one I2C bus in normal config
+PB8 I2C1_SCL I2C1
+PB9 I2C1_SDA I2C1
+
+# analog pins
+PC3 BATT_VOLTAGE_SENS ADC1 SCALE(1)
+PC2 BATT_CURRENT_SENS ADC1 SCALE(1)
+
+# define default battery setup
+define HAL_BATT_VOLT_PIN 13
+define HAL_BATT_CURR_PIN 12
+define HAL_BATT_VOLT_SCALE 10.1
+define HAL_BATT_CURR_SCALE 17.0
+
+# order of UARTs (and USB)
+SERIAL_ORDER OTG1 UART4 USART6
+
+# rcinput is PA8
+PA9 TIM1_CH2 TIM1 RCININT PULLDOWN
+#PA8 TIM1_CH1 TIM1 RCININT PULLDOWN
+
+# RC Input PPM
+PB7 TIM4_CH2 TIM4 PPMIN
+
+# SBUS inversion control pin, active low
+PC15 SBUS_INVERT OUTPUT
+
+# USART6, telem1, SERIAL1
+PC6 USART6_TX USART6 
+PC7 USART6_RX USART6
+
+# UART4 (GPS), SERIAL3
+PA1 UART4_RX UART4 NODMA
+PA0 UART4_TX UART4 NODMA
+
+PA11 OTG_FS_DM OTG1
+PA12 OTG_FS_DP OTG1
+
+# USB detection
+PA8 VBUS INPUT OPENDRAIN
+#PA9 VBUS INPUT OPENDRAIN
+
+# Debug
+PA13 JTMS-SWDIO SWD
+PA14 JTCK-SWCLK SWD
+
+# PWM out pins. Note that channel order follows the ArduPilot motor
+# order conventions
+PA2 TIM2_CH3 TIM2 PWM(1) GPIO(50) 
+PA3 TIM2_CH4 TIM2 PWM(2) GPIO(51) 
+PB0 TIM3_CH3 TIM3 PWM(3) GPIO(52) 
+PB1 TIM3_CH4 TIM3 PWM(4) GPIO(53) 
+PB4 TIM3_CH1 TIM3 PWM(5) GPIO(54)
+PC8 TIM8_CH3 TIM8 PWM(6) GPIO(55)
+
+#DMA_NOSHARE TIM5*
+
+#PB3 TIM2_CH2 TIM2 PWM(7) GPIO(56) # LED strip
+#define HAL_NEOPIXEL_COUNT 8
+
+define HAL_STORAGE_SIZE 15360
+define STORAGE_FLASH_PAGE 2
+
+# reserve 32k for bootloader and 32k for flash storage
+FLASH_RESERVE_START_KB 64
+
+# no built-in compass, but probe the i2c bus for all possible
+# external compass types
+define ALLOW_ARM_NO_COMPASS
+define HAL_COMPASS_DEFAULT HAL_COMPASS_NONE
+define HAL_PROBE_EXTERNAL_I2C_COMPASSES
+define HAL_I2C_INTERNAL_MASK 0
+define HAL_COMPASS_AUTO_ROT_DEFAULT 2
+
+# SPI devices
+SPIDEV mpu6000   SPI1 DEVID1 MPU6500_CS  MODE3 1*MHZ 8*MHZ 
+SPIDEV dataflash SPI3 DEVID1 FLASH_CS    MODE3 32*MHZ 32*MHZ
+SPIDEV osd       SPI3 DEVID4 MAX7456_CS  MODE0 10*MHZ 10*MHZ
+
+# one IMU
+IMU Invensense SPI:mpu6000 ROTATION_YAW_90
+
+define ARMING_DELAY_SEC 0
+
+# built-in barometer
+BARO SPL06  I2C:0:0x76
+BARO BMP280  I2C:0:0x76
+#BARO LPS2XH I2C:0:0x76
+
+# enable logging to dataflash
+define HAL_LOGGING_DATAFLASH_ENABLED 1
+
+# setup for OSD
+define OSD_ENABLED 1
+define HAL_OSD_TYPE_DEFAULT 1
+ROMFS_WILDCARD libraries/AP_OSD/fonts/font0.bin
+
+# need more space for default parameters
+define AP_PARAM_MAX_EMBEDDED_PARAM 3584
+
+# 8 PWM available by default
+define BOARD_PWM_COUNT_DEFAULT 8
+
+#board default 
+#define AP_TRAMP_ENABLED 1
+
+# save some flash
+#include ../include/save_some_flash.inc
+#include ../include/minimal_GPS.inc
+#include ../include/minimal_Airspeed.inc
+#include ../include/minimal.inc
+#include ../include/minimize_features.inc
