@@ -115,9 +115,10 @@ PE3 VDD_SENSORS_EN OUTPUT HIGH
 # If you need to use dshot, enable dma channel for timers and 
 # modify the function bool RCOutput::setup_group_DMA in libraties/AP_HAL_ChibiOS/RCOutput.cpp
 
+define HC32_TMRA_1_PER_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 7)
 define HC32_TMRA_1_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(1, 6)
+define HC32_TMRA_4_PER_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 5)
 define HC32_TMRA_4_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(1, 7)
-define HC32_TMRA_9_UP_DMA_CHANNEL   HC32_DMA_CHANNEL_ID(2, 5)
 
 # PWM outputs via groups, so it is best to set the channels of the same timer to adjacent output pins
 # Such as TIMA_1_PWM1 - TIMA_1_PWM4 setup to PWM(1)-PWM(4)
